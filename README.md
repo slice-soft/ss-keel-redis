@@ -168,7 +168,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Links
 
 - Website: [keel-go.dev](https://keel-go.dev)
-- GitHub: [github.com/slice-soft/ss-keel-cli](https://github.com/slice-soft/ss-keel-cli)
+- GitHub: [github.com/slice-soft/ss-keel-redis](https://github.com/slice-soft/ss-keel-redis)
 - Documentation: [docs.keel-go.dev](https://docs.keel-go.dev)
 
 ---

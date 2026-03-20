@@ -1,163 +1,147 @@
 <img src="https://cdn.slicesoft.dev/boat.svg" width="400" />
 
-# Keel Addon Template
-Keel is a Go framework for building REST APIs with modular 
+# ss-keel-redis
+Keel is a Go framework for building REST APIs with modular
 architecture, automatic OpenAPI, and built-in validation.
 
-[![CI](https://github.com/slice-soft/ss-keel-core/actions/workflows/ci.yml/badge.svg)](https://github.com/slice-soft/ss-keel-core/actions)
+[![CI](https://github.com/slice-soft/ss-keel-redis/actions/workflows/ci.yml/badge.svg)](https://github.com/slice-soft/ss-keel-redis/actions)
 ![Go](https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go&logoColor=white)
-[![Go Report Card](https://goreportcard.com/badge/github.com/slice-soft/ss-keel-core)](https://goreportcard.com/report/github.com/slice-soft/ss-keel-core)
-[![Go Reference](https://pkg.go.dev/badge/github.com/slice-soft/ss-keel-core.svg)](https://pkg.go.dev/github.com/slice-soft/ss-keel-core)
+[![Go Report Card](https://goreportcard.com/badge/github.com/slice-soft/ss-keel-redis)](https://goreportcard.com/report/github.com/slice-soft/ss-keel-redis)
+[![Go Reference](https://pkg.go.dev/badge/github.com/slice-soft/ss-keel-redis.svg)](https://pkg.go.dev/github.com/slice-soft/ss-keel-redis)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Made in Colombia](https://img.shields.io/badge/Made%20in-Colombia-FCD116?labelColor=003893)
 
 
-This repository is a **base template** for building **Keel Framework** addons.
-It helps developers and companies quickly create functional addons with CI/CD, testing, and automated releases.
-It also serves as a reference for the `keel-addon.json` contract used by the CLI to download and integrate addons into Keel projects.
+## Cache addon for Keel
+
+`ss-keel-redis` adds Redis cache support to a [Keel](https://keel-go.dev) project via [go-redis v9](https://redis.uptrace.dev/).
+It is the official addon for distributed caching in the Keel ecosystem and implements `contracts.Cache` from `ss-keel-core`.
 
 ---
 
-## 🚀 Template structure
-
-```
-ss-keel-addon-template/
-├── .github/workflows/    # CI and release workflows (commented by default)
-│   ├── ci.yml
-│   └── release.yml
-├── .gitignore
-├── .release-please-manifest.json
-├── .release-please-config.json
-├── CONTRIBUTING.md       # Contribution guide
-├── keel-addon.json       # Addon contract for the CLI
-├── LICENSE
-├── README.md
-└── go.mod
-```
-
----
-
-## 🛠️ Create a new addon
-
-Recommended option (GitHub Template):
-
-1. Open this repository on GitHub.
-2. Click **Use this template**.
-3. Create your new repository from this template.
-4. Clone your new repository locally.
-
-Alternative option (manual clone):
+## 🚀 Installation
 
 ```bash
-# Clone the template into a new project
-git clone https://github.com/slice-soft/ss-keel-addon-template.git my-addon
-cd my-addon
-
-# Delete the existing git history
-rm -rf .git
-
-# Initialize a new git repository
-git init
-
-# Update the Go module path
-go mod edit -module github.com/my-company/my-addon
-go mod tidy
+keel add redis
 ```
 
-> `my-addon` is now ready to be developed and registered in Keel.
-
-Edit `keel-addon.json` with your addon's real values (`name`, `repo`, `version`, `steps`, etc.).
+The Keel CLI will:
+1. Add `github.com/slice-soft/ss-keel-redis` as a dependency.
+2. Create `cmd/setup_redis.go` and inject initialization code into `cmd/main.go`.
+3. Add a `REDIS_URL` environment variable example to both `.env` and `.env.example`.
 
 ---
 
-## ⚡️ Keel integration
+## ⚙️ Configuration
 
-* Place your addon logic in `internal/addon`.
-* Define metadata in `keel-addon.json`. This file is the contract the Keel CLI validates to install and integrate the addon.
+```go
+client, err := ssredis.New(ssredis.Config{
+    URL:    config.GetEnvOrDefault("REDIS_URL", "redis://localhost:6379"),
+    Logger: app.Logger(),
+})
+if err != nil {
+    app.Logger().Error("failed to start redis: %v", err)
+}
+defer client.Close()
+```
+
+The `URL` field uses the standard Redis URL format: `redis://[:password@]host[:port][/db-number]`.
+
+---
+
+## 🔗 Connection pool
+
+Pool defaults applied when not overridden:
+
+| Parameter | Default |
+|---|---|
+| `MaxActiveConns` | 10 |
+| `MinIdleConns` | 2 |
+| `MaxIdleConns` | 5 |
+| `ConnMaxIdleTime` | 5 min |
+| `ConnMaxLifetime` | 30 min |
+
+Override via `Config.Pool`:
+
+```go
+client, err := ssredis.New(ssredis.Config{
+    URL:    config.GetEnvOrDefault("REDIS_URL", "redis://localhost:6379"),
+    Logger: app.Logger(),
+    Pool: ssredis.PoolConfig{
+        MaxActiveConns:  20,
+        MinIdleConns:    5,
+        ConnMaxLifetime: time.Hour,
+    },
+})
+```
+
+---
+
+## 📦 Cache operations
+
+`contracts.Cache` covers the four core operations:
+
+```go
+ctx := context.Background()
+
+// Store a value with a TTL
+err := client.Set(ctx, "user:123", []byte(`{"name":"Alice"}`), 5*time.Minute)
+
+// Retrieve — returns nil, nil when the key does not exist
+val, err := client.Get(ctx, "user:123")
+
+// Remove a key
+err = client.Delete(ctx, "user:123")
+
+// Check existence without reading the value
+exists, err := client.Exists(ctx, "user:123")
+```
+
+A zero TTL in `Set` means no expiration.
+
+---
+
+## 🔧 Advanced operations
+
+Use `RDB()` to access the full go-redis client for pipelines, transactions, Lua scripts, and Pub/Sub:
+
+```go
+pipe := client.RDB().Pipeline()
+pipe.Incr(ctx, "counter")
+pipe.Expire(ctx, "counter", time.Hour)
+_, err := pipe.Exec(ctx)
+```
+
+---
+
+## ❤️ Health checker
+
+Register the Redis connection in the Keel health endpoint:
+
+```go
+app.RegisterHealthChecker(ssredis.NewHealthChecker(client))
+```
+
+This exposes the Redis status under `GET /health`:
 
 ```json
-{
-  "name": "my-addon",
-  "version": "0.1.0",
-  "description": "Short addon description",
-  "register": true,
-  "repo": "github.com/your-user/your-repo",
-  "steps": [
-    {
-      "file": "cmd/main.go",
-      "action": "append",
-      "snippet": "// TODO: add addon initialization here",
-      "flags": []
-    }
-  ]
-}
+{ "redis": "UP" }
 ```
-
-* The Keel CLI uses this file to:
-  * Resolve the module to download (`repo`).
-  * Validate that the addon matches the expected format.
-  * Execute `steps` to integrate changes automatically.
-  * Register the addon when applicable (`register`).
-
----
-
-## 🧭 `keel add` flow in the ecosystem
-
-The CLI supports two installation paths:
-
-1. **Official or verified addons**
-
-```bash
-keel add gorm
-```
-
-* `gorm` is interpreted as an alias.
-* The CLI checks the `ss-keel-addons` alias repository.
-* If the alias exists, it gets the addon URL, downloads it, and validates its `keel-addon.json`.
-* Then it executes the defined `steps` to integrate it automatically into the project.
-
-2. **Unofficial addons or addons not verified by SliceSoft/community**
-
-```bash
-keel add github.com/user/repo
-```
-
-* The CLI uses the provided repository directly.
-* It downloads the module and validates its `keel-addon.json`.
-* If validation passes, it applies the automatic integration steps the same way as official addons.
-
----
-
-## 📚 Alias library: `ss-keel-addons`
-
-`ss-keel-addons` works as an alias catalog/library for addons.
-
-* Stores the relationship `alias -> repository URL`.
-* Lets the CLI verify whether an alias exists before installing.
-* Centralizes official or community-verified addons.
-* Acts as the entry point for pre-validation before the automatic download and integration process.
 
 ---
 
 ## 🤚 CI/CD and releases
 
-This repository is a template, so workflows are intentionally shipped **commented out** to avoid accidental executions after cloning:
-
-* `.github/workflows/ci.yml`
-* `.github/workflows/release.yml`
-
-To enable CI/CD in your new addon repository:
-
-1. Uncomment both workflow files.
-2. Push to GitHub to validate that Actions run correctly.
+- **CI** runs on every pull request targeting `main` via `.github/workflows/ci.yml`.
+- **Releases** are created automatically on merge to `main` via `.github/workflows/release.yml` using Release Please.
 
 ---
 
 ## 💡 Recommendations
 
-* Keep your addons independent and modular.
-* Use Keel events and guards to extend functionality without touching the core.
-* Document each addon in its own project README.
+* Use `REDIS_URL` for all environments; it keeps credentials out of code and plays well with secrets managers.
+* Accept `contracts.Cache` in your services — not `*ssredis.Client` — so you can swap the implementation in tests.
+* Register `NewHealthChecker` so Keel's `/health` endpoint always reflects real Redis connectivity.
 
 ---
 

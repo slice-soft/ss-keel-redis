@@ -1,21 +1,30 @@
 {
-  "name": "my-addon",
+  "name": "ss-keel-redis",
   "version": "0.1.0",
-  "description": "Description of my addon",
-  "register": true,
-  "repo": "github.com/your-user/your-repo",
+  "description": "Redis cache via go-redis — implements contracts.Cache with health check support",
+  "repo": "github.com/slice-soft/ss-keel-redis",
   "steps": [
     {
-      "file": "cmd/main.go",
-      "action": "append",
-      "snippet": "// TODO: add addon initialization here",
-      "flags": []
+      "type": "go_get",
+      "package": "github.com/slice-soft/ss-keel-redis"
     },
     {
-      "file": "config/config.go",
-      "action": "append",
-      "snippet": "// TODO: add addon configuration here",
-      "flags": []
+      "type": "env",
+      "key": "REDIS_URL",
+      "example": "redis://localhost:6379",
+      "description": "Redis connection URL. Format: redis://[:password@]host[:port][/db-number]"
+    },
+    {
+      "type": "create_provider_file",
+      "filename": "cmd/setup_redis.go",
+      "guard": "func setupRedis(",
+      "content": "package main\n\nimport (\n\t\"github.com/slice-soft/ss-keel-core/config\"\n\t\"github.com/slice-soft/ss-keel-core/core\"\n\t\"github.com/slice-soft/ss-keel-core/logger\"\n\tssredis \"github.com/slice-soft/ss-keel-redis/redis\"\n)\n\n// setupRedis initialises the Redis connection and registers a health checker.\nfunc setupRedis(app *core.App, log *logger.Logger) *ssredis.Client {\n\tredisURL := config.GetEnvOrDefault(\"REDIS_URL\", \"redis://localhost:6379\")\n\tclient, err := ssredis.New(ssredis.Config{\n\t\tURL:    redisURL,\n\t\tLogger: log,\n\t})\n\tif err != nil {\n\t\tlog.Error(\"failed to initialize redis: %v\", err)\n\t}\n\tapp.RegisterHealthChecker(ssredis.NewHealthChecker(client))\n\treturn client\n}\n"
+    },
+    {
+      "type": "main_code",
+      "anchor": "before_modules",
+      "guard": "setupRedis(",
+      "code": "redisClient := setupRedis(app, appLogger)\ndefer redisClient.Close()"
     }
   ]
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/slice-soft/ss-keel-redis/compare/v1.1.1...v1.1.2) (2026-03-21)
+
+
+### Bug Fixes
+
+* update project description in README to clarify ss-keel-redis functionality ([#6](https://github.com/slice-soft/ss-keel-redis/issues/6)) ([3ab0f66](https://github.com/slice-soft/ss-keel-redis/commit/3ab0f66def949b9ac4202585339f811efaa92323))
+
 ## [1.1.1](https://github.com/slice-soft/ss-keel-redis/compare/v1.1.0...v1.1.1) (2026-03-20)
 
 

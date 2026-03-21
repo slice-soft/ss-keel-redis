@@ -1,10 +1,10 @@
 <img src="https://cdn.slicesoft.dev/boat.svg" width="400" />
 
 # ss-keel-redis
-Keel is a Go framework for building REST APIs with modular
-architecture, automatic OpenAPI, and built-in validation.
+Official Redis cache addon for Keel — implements contracts.Cache via go-redis v9.
 
 [![CI](https://github.com/slice-soft/ss-keel-redis/actions/workflows/ci.yml/badge.svg)](https://github.com/slice-soft/ss-keel-redis/actions)
+[![Release](https://img.shields.io/github/v/release/slice-soft/ss-keel-redis)](https://github.com/slice-soft/ss-keel-redis/releases)
 ![Go](https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go&logoColor=white)
 [![Go Report Card](https://goreportcard.com/badge/github.com/slice-soft/ss-keel-redis)](https://goreportcard.com/report/github.com/slice-soft/ss-keel-redis)
 [![Go Reference](https://pkg.go.dev/badge/github.com/slice-soft/ss-keel-redis.svg)](https://pkg.go.dev/github.com/slice-soft/ss-keel-redis)

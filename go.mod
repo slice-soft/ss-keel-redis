@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/alicebob/miniredis/v2 v2.37.0
 	github.com/redis/go-redis/v9 v9.7.3
-	github.com/slice-soft/ss-keel-core v0.7.0
+	github.com/slice-soft/ss-keel-core v0.9.0
 )
 
 require (

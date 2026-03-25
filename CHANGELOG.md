@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/slice-soft/ss-keel-redis/compare/v1.2.0...v1.2.1) (2026-03-25)
+
+
+### Bug Fixes
+
+* Update ss-keel-core dependency to v0.10.0 in go.mod and go.sum ([#10](https://github.com/slice-soft/ss-keel-redis/issues/10)) ([d869b45](https://github.com/slice-soft/ss-keel-redis/commit/d869b45f69059fbc8372bfe5069f028aca082aa1))
+
 ## [1.2.0](https://github.com/slice-soft/ss-keel-redis/compare/v1.1.2...v1.2.0) (2026-03-25)
 
 

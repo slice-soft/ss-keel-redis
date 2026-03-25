@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/slice-soft/ss-keel-redis/compare/v1.1.2...v1.2.0) (2026-03-25)
+
+
+### Features
+
+* implement Redis client as a debuggable addon with event tracking ([#8](https://github.com/slice-soft/ss-keel-redis/issues/8)) ([63465fe](https://github.com/slice-soft/ss-keel-redis/commit/63465fe1e7366cb76609a227dc489e81f875877b))
+
 ## [1.1.2](https://github.com/slice-soft/ss-keel-redis/compare/v1.1.1...v1.1.2) (2026-03-21)
 
 

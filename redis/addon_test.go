@@ -100,11 +100,17 @@ func TestAddon_Manifest_EnvVars(t *testing.T) {
 	if ev.Key != "REDIS_URL" {
 		t.Fatalf("expected EnvVar key REDIS_URL, got %q", ev.Key)
 	}
-	if !ev.Required {
-		t.Fatal("expected REDIS_URL to be required")
+	if ev.ConfigKey != "redis.url" {
+		t.Fatalf("expected ConfigKey redis.url, got %q", ev.ConfigKey)
+	}
+	if ev.Required {
+		t.Fatal("expected REDIS_URL to be optional")
 	}
 	if ev.Secret {
 		t.Fatal("expected REDIS_URL to not be secret")
+	}
+	if ev.Default != "redis://localhost:6379" {
+		t.Fatalf("expected REDIS_URL default redis://localhost:6379, got %q", ev.Default)
 	}
 }
 

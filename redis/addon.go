@@ -31,8 +31,9 @@ func (c *Client) Manifest() contracts.AddonManifest {
 		EnvVars: []contracts.EnvVar{
 			{
 				Key:         "REDIS_URL",
+				ConfigKey:   "redis.url",
 				Description: "Redis connection URL",
-				Required:    true,
+				Required:    false,
 				Secret:      false,
 				Default:     "redis://localhost:6379",
 				Source:      "redis",

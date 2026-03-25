@@ -20,7 +20,7 @@ type Config struct {
 	// URL is the Redis connection string.
 	// Format: redis://[:password@]host[:port][/db-number]
 	// Default: redis://localhost:6379
-	URL      string
+	URL      string `keel:"redis.url,required"`
 	SkipPing bool
 	Pool     PoolConfig
 	Logger   contracts.Logger

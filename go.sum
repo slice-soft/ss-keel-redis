@@ -27,8 +27,8 @@ github.com/redis/go-redis/v9 v9.7.3 h1:YpPyAayJV+XErNsatSElgRZZVCwXX9QzkKYNvO7x0
 github.com/redis/go-redis/v9 v9.7.3/go.mod h1:bGUrSggJ9X9GUmZpZNEOQKaANxSGgOEBRltRTZHSvrA=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
-github.com/slice-soft/ss-keel-core v0.10.0 h1:AceummlG6xxaIjN9+hfMKt27gTUZ+a3cdGnmmJukBvo=
-github.com/slice-soft/ss-keel-core v0.10.0/go.mod h1:v9VPUAoEukLmvi5cnGZcqnJjKTG0I/mn4GDmT8wJ+UQ=
+github.com/slice-soft/ss-keel-core v0.11.0 h1:RL/PJQbjRnfQlRBAba3sjiDNJ3hZ4jSz4IjKM4O3FfQ=
+github.com/slice-soft/ss-keel-core v0.11.0/go.mod h1:v9VPUAoEukLmvi5cnGZcqnJjKTG0I/mn4GDmT8wJ+UQ=
 github.com/valyala/bytebufferpool v1.0.0 h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=
 github.com/valyala/bytebufferpool v1.0.0/go.mod h1:6bBcMArwyJ5K/AmCkWv1jt77kVWyCJ6HpOuEn7z0Csc=
 github.com/valyala/fasthttp v1.51.0 h1:8b30A5JlZ6C7AS81RsWjYMQmrZG6feChmgAolCl1SqA=

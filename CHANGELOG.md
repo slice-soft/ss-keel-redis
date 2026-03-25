@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/slice-soft/ss-keel-redis/compare/v1.2.1...v1.3.0) (2026-03-25)
+
+
+### Features
+
+* update Redis client configuration to include optional redis.url property ([#12](https://github.com/slice-soft/ss-keel-redis/issues/12)) ([7ae5746](https://github.com/slice-soft/ss-keel-redis/commit/7ae5746d346150388b184e668b619cbfef89c475))
+
 ## [1.2.1](https://github.com/slice-soft/ss-keel-redis/compare/v1.2.0...v1.2.1) (2026-03-25)
 
 

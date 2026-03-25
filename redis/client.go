@@ -13,6 +13,7 @@ import (
 type Client struct {
 	rdb    *redis.Client
 	logger contracts.Logger
+	events chan contracts.PanelEvent
 }
 
 var _ contracts.Cache = (*Client)(nil)
@@ -48,34 +49,90 @@ func New(cfg Config) (*Client, error) {
 		cfg.Logger.Info("redis connected [url=%s]", cfg.URL)
 	}
 
-	return &Client{rdb: rdb, logger: cfg.Logger}, nil
+	return &Client{rdb: rdb, logger: cfg.Logger, events: make(chan contracts.PanelEvent, 256)}, nil
+}
+
+// tryEmit sends an event to the panel channel without blocking.
+func (c *Client) tryEmit(e contracts.PanelEvent) {
+	select {
+	case c.events <- e:
+	default:
+	}
 }
 
 // Get retrieves the raw bytes stored at key.
 // Returns nil, nil when the key does not exist.
 func (c *Client) Get(ctx context.Context, key string) ([]byte, error) {
+	start := time.Now()
 	val, err := c.rdb.Get(ctx, key).Bytes()
+	hit := true
 	if err == redis.Nil {
-		return nil, nil
+		hit = false
+		err = nil
+		val = nil
 	}
-
+	c.tryEmit(contracts.PanelEvent{
+		Timestamp: time.Now(),
+		AddonID:   "redis",
+		Label:     "get",
+		Level:     "info",
+		Detail: map[string]any{
+			"hit":         hit,
+			"duration_ms": time.Since(start).Milliseconds(),
+		},
+	})
 	return val, err
 }
 
 // Set stores value at key with the given TTL. A zero TTL means no expiration.
 func (c *Client) Set(ctx context.Context, key string, value []byte, ttl time.Duration) error {
-	return c.rdb.Set(ctx, key, value, ttl).Err()
+	start := time.Now()
+	err := c.rdb.Set(ctx, key, value, ttl).Err()
+	c.tryEmit(contracts.PanelEvent{
+		Timestamp: time.Now(),
+		AddonID:   "redis",
+		Label:     "set",
+		Level:     "info",
+		Detail: map[string]any{
+			"duration_ms": time.Since(start).Milliseconds(),
+			"ttl_ms":      ttl.Milliseconds(),
+		},
+	})
+	return err
 }
 
 // Delete removes key from the cache.
 func (c *Client) Delete(ctx context.Context, key string) error {
-	return c.rdb.Del(ctx, key).Err()
+	start := time.Now()
+	err := c.rdb.Del(ctx, key).Err()
+	c.tryEmit(contracts.PanelEvent{
+		Timestamp: time.Now(),
+		AddonID:   "redis",
+		Label:     "delete",
+		Level:     "info",
+		Detail: map[string]any{
+			"duration_ms": time.Since(start).Milliseconds(),
+		},
+	})
+	return err
 }
 
 // Exists reports whether key is present in the cache.
 func (c *Client) Exists(ctx context.Context, key string) (bool, error) {
+	start := time.Now()
 	n, err := c.rdb.Exists(ctx, key).Result()
-	return n > 0, err
+	found := n > 0
+	c.tryEmit(contracts.PanelEvent{
+		Timestamp: time.Now(),
+		AddonID:   "redis",
+		Label:     "exists",
+		Level:     "info",
+		Detail: map[string]any{
+			"duration_ms": time.Since(start).Milliseconds(),
+			"found":       found,
+		},
+	})
+	return found, err
 }
 
 // RDB returns the underlying go-redis client for advanced operations.

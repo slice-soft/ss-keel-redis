@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/slice-soft/ss-keel-redis/compare/v1.3.1...v1.3.2) (2026-04-22)
+
+
+### Bug Fixes
+
+* update Go version to 1.25.7 in go.mod ([#16](https://github.com/slice-soft/ss-keel-redis/issues/16)) ([9fe60c7](https://github.com/slice-soft/ss-keel-redis/commit/9fe60c711b6db51f7998d3c70386f34718621706))
+
 ## [1.3.1](https://github.com/slice-soft/ss-keel-redis/compare/v1.3.0...v1.3.1) (2026-04-22)
 
 

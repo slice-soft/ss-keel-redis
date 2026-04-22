@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/slice-soft/ss-keel-redis/compare/v1.3.0...v1.3.1) (2026-04-22)
+
+
+### Bug Fixes
+
+* update keel-addon.json structure and ensure proper formatting for Redis configuration ([#14](https://github.com/slice-soft/ss-keel-redis/issues/14)) ([ab86f3e](https://github.com/slice-soft/ss-keel-redis/commit/ab86f3efe85fe28072c0ab70c3224ef280d32e4f))
+
 ## [1.3.0](https://github.com/slice-soft/ss-keel-redis/compare/v1.2.1...v1.3.0) (2026-03-25)
 
 

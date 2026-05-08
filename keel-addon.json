@@ -30,7 +30,7 @@
             "type": "create_provider_file",
             "filename": "cmd/setup_redis.go",
             "guard": "func setupRedis(",
-            "content": "package main\n\nimport (\n\t\"github.com/slice-soft/ss-keel-core/config\"\n\t\"github.com/slice-soft/ss-keel-core/core\"\n\t\"github.com/slice-soft/ss-keel-core/logger\"\n\tssredis \"github.com/slice-soft/ss-keel-redis/redis\"\n)\n\n// setupRedis initialises the Redis connection and registers a health checker.\nfunc setupRedis(app *core.App, log *logger.Logger) *ssredis.Client {\n\tredisConfig := config.MustLoadConfig[ssredis.Config]()\n\tredisConfig.Logger = log\n\n\tclient, err := ssredis.New(redisConfig)\n\tif err != nil {\n\t\tlog.Error(\"failed to initialize redis: %v\", err)\n\t}\n\tapp.RegisterHealthChecker(ssredis.NewHealthChecker(client))\n\treturn client\n}\n"
+            "content": "package main\n\nimport (\n\t\"github.com/slice-soft/ss-keel-core/config\"\n\t\"github.com/slice-soft/ss-keel-core/contracts\"\n\t\"github.com/slice-soft/ss-keel-core/core\"\n\tssredis \"github.com/slice-soft/ss-keel-redis/redis\"\n)\n\n// setupRedis initialises the Redis connection and registers a health checker.\nfunc setupRedis(app *core.App, log contracts.Logger) *ssredis.Client {\n\tredisConfig := config.MustLoadConfig[ssredis.Config]()\n\tredisConfig.Logger = log\n\n\tclient, err := ssredis.New(redisConfig)\n\tif err != nil {\n\t\tlog.Error(\"failed to initialize redis: %v\", err)\n\t}\n\tapp.RegisterHealthChecker(ssredis.NewHealthChecker(client))\n\treturn client\n}\n"
         },
         {
             "type": "main_code",

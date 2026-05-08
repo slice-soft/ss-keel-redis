@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/slice-soft/ss-keel-redis/compare/v1.3.2...v1.3.3) (2026-05-08)
+
+
+### Bug Fixes
+
+* update logger type in setupRedis function for proper logging support ([#19](https://github.com/slice-soft/ss-keel-redis/issues/19)) ([c0d5be3](https://github.com/slice-soft/ss-keel-redis/commit/c0d5be3174131cd2174d9036e159dd002b8559b5))
+
 ## [1.3.2](https://github.com/slice-soft/ss-keel-redis/compare/v1.3.1...v1.3.2) (2026-04-22)
 
 
